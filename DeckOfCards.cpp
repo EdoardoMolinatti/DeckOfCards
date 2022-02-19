@@ -86,6 +86,16 @@ struct Card {
 
 class Deck : public IDeck {
 public:
+    void printAll()
+    {
+        for (int16_t idx = 0, totCards = static_cast<int16_t>(m_cards.size()); idx < totCards; ++idx)
+        {
+            cout << "Index " << setw(2) << static_cast<int>(idx) << ": " << flush;
+            m_cards[idx].print();
+        }
+        cout << endl;
+    }
+
     void printFirst(uint8_t num)
     {
         cout << "Printing the first " << static_cast<int>(num) << " cards in the deck:" << endl << flush;
@@ -208,10 +218,10 @@ int main()
     //assert(testShuffle());
 
     Deck deck;
-    deck.printFirst(deck.size());
+    deck.printAll(); //deck.printFirst(deck.size());
     deck.shuffle();
     //deck.shuffle(512);
-    deck.printFirst(deck.size());
+    deck.printAll(); //deck.printFirst(deck.size());
 
     return 0;
 }
