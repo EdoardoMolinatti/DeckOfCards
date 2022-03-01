@@ -17,14 +17,14 @@
 using namespace std;
 
 // GLOBALS //
-static const uint8_t sg_numCards = 52;
+static const uint8_t sg_numCards = 52;  // 52 - 65 - 78 - 91 - 104
 
 
 // Assume class used by many other people. Would be very difficult to change.
 class IDeck {
     virtual void printFirst(uint8_t) = 0;
     virtual void shuffle() = 0;
-    //virtual uint8_t size() = 0;
+    //virtual uint8_t size() = 0;   // suggested method to add to the interface
 };
 
 enum class Suit {
@@ -32,6 +32,10 @@ enum class Suit {
     Spades,
     Diamonds,
     Clubs,
+    //WhiteHearts,
+    //WhiteSpades,
+    //WhiteDiamonds,
+    //WhiteClubs,
     SUITS       // Number of elements in the Suit enum
 };
 
@@ -78,6 +82,19 @@ struct Card {
         case Suit::Clubs:
             cout << "♣" << endl;    // Clubs
             break;
+        // https://en.wikipedia.org/wiki/Playing_cards_in_Unicode
+        //case Suit::WhiteHearts:
+        //    cout << "♡" << endl;    // WhiteHearts
+        //    break;
+        //case Suit::WhiteSpades:
+        //    cout << "♤" << endl;    // WhiteSpades
+        //    break;
+        //case Suit::WhiteDiamonds:
+        //    cout << "♢" << endl;    // WhiteDiamonds
+        //    break;
+        //case Suit::WhiteClubs:
+        //    cout << "♧" << endl;    // WhiteClubs
+        //    break;
         default:
             cout << "?" << endl;
         }
@@ -86,11 +103,14 @@ struct Card {
 
 class Deck : public IDeck {
 public:
+    // Method added to print all the cards in the Deck (in straight order)
     void printAll()
     {
-        for (int16_t idx = 0, totCards = static_cast<int16_t>(m_cards.size()); idx < totCards; ++idx)
+        const int16_t totCards = static_cast<int16_t>(m_cards.size());
+        const int16_t numWidth = (totCards < 100) ? 2 : 3;
+        for (int16_t idx = 0; idx < totCards; ++idx)
         {
-            cout << "Index " << setw(2) << static_cast<int>(idx) << ": " << flush;
+            cout << "Index " << setw(numWidth) << idx << ": " << flush;
             m_cards[idx].print();
         }
         cout << endl;
@@ -110,7 +130,7 @@ public:
 
     void shuffle()
     {
-        shuffle( static_cast<uint8_t>(m_cards.size()) );
+        shuffle( static_cast<uint32_t>(m_cards.size()) );
     }
 
     void shuffle(uint32_t swaps)
