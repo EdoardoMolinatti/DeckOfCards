@@ -16,15 +16,12 @@
 // Using directives //
 using namespace std;
 
-// GLOBALS //
-static const uint8_t sg_numCards = 52;  // 52 - 65 - 78 - 91 - 104
-
 
 // Assume class used by many other people. Would be very difficult to change.
 class IDeck {
     virtual void printFirst(uint8_t) = 0;
     virtual void shuffle() = 0;
-    //virtual uint8_t size() = 0;   // suggested method to add to the interface
+    //virtual uint8_t size() = 0;             // suggested method to add to the IDeck interface
 };
 
 enum class Suit {
@@ -36,8 +33,12 @@ enum class Suit {
     //WhiteSpades,
     //WhiteDiamonds,
     //WhiteClubs,
-    SUITS       // Number of elements in the Suit enum
+    SUITS_NUM           // Number of elements in the Suit enum
 };
+
+// GLOBALS //
+static const uint8_t sg_cardsPerSuit = 13; // [1..10] + J + Q + K
+static const uint8_t sg_deckNumCards = sg_cardsPerSuit * static_cast<uint8_t>(Suit::SUITS_NUM);  // 52 - 65 - 78 - 91 - 104
 
 struct Card {
     Suit        _suit;
@@ -167,7 +168,7 @@ public:
     Deck()
     {
         // Create a complete deck of cards
-        const uint8_t suitsNum = static_cast<uint8_t>(Suit::SUITS);
+        const uint8_t suitsNum = static_cast<uint8_t>(Suit::SUITS_NUM);
         const uint8_t cardsPerSuit = static_cast<uint8_t>(m_cards.size()) / suitsNum;
         for (uint8_t i = 0; i < suitsNum; ++i)
         {
@@ -182,10 +183,10 @@ public:
     }
 
 protected:
-    array<Card, sg_numCards> m_cards;
+    array<Card, sg_deckNumCards> m_cards;
 
 private:
-    // Random number in a range [min, max]
+    // Returns a random number in a range [min, max]
     int random(int min, int max)
     {
         static bool first = true;
@@ -200,6 +201,7 @@ private:
 };
 
 
+// TESTS Start -----------------------------------------------------------------
 bool testShuffle()
 {
     bool testPassed = true;
@@ -220,6 +222,7 @@ bool testPrintFirst()
 
     return testPassed;
 }
+// TESTS End -------------------------------------------------------------------
 
 
 int main()
@@ -228,7 +231,7 @@ int main()
     // Set console code page to CodePage UTF8 so console known how to interpret string data
     SetConsoleOutputCP(CP_UTF8);
     // Enable buffering to prevent VS from chopping up UTF8 byte sequences
-    //setvbuf(stdout, nullptr, _IOFBF, 1024); // [no need for this anymore]
+    //setvbuf(stdout, nullptr, _IOFBF, 1024); // [no need for this with VS 2022 and later]
 
     //std::string test = "Greek: αβγδ; German: Übergrößenträger;";// R"( ¯\_(ツ)_/¯)";
     //std::cout << test << std::endl;
