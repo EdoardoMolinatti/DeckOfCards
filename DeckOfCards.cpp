@@ -2,6 +2,7 @@
 //
 // C includes
 #include <cassert>
+#include <cstdint>
 #include <cstdlib>
 #include <ctime>
 // C++ STL includes
@@ -24,7 +25,7 @@ class IDeck {
     //virtual uint8_t size() = 0;             // suggested method to add to the IDeck interface
 };
 
-enum class Suit {
+enum class Suit : uint8_t {
     Hearts,
     Spades,
     Diamonds,
@@ -33,7 +34,7 @@ enum class Suit {
     //WhiteSpades,
     //WhiteDiamonds,
     //WhiteClubs,
-    SUITS_NUM           // Number of elements in the Suit enum
+    SUITS_NUM       // Number of elements in the Suit enum
 };
 
 // GLOBALS //
@@ -42,7 +43,7 @@ static const uint8_t sg_deckNumCards = sg_cardsPerSuit * static_cast<uint8_t>(Su
 
 struct Card {
     Suit        _suit;
-    uint32_t    _val;
+    uint8_t     _val;
 
     Card()
         : _suit(Suit::Hearts)
@@ -66,7 +67,11 @@ struct Card {
             cout << setw(2) << "A";
             break;
         default:
-            cout << setw(2) << _val;
+            cout << setw(2) << static_cast<unsigned>(_val);
+            // N.B.: since _val is "uint8_t", and that type is defined as "unsigned char",
+            // operator<<(ostream&, unsigned char) will be used, and that operator overload
+            // would print the char value instead of the decimal value.
+            // Casting to 'unsigned int' solves the problem ("unsigned" implies "unsigned int").
         }
         //----------------------------------------
         switch (_suit)
@@ -177,7 +182,7 @@ public:
             for (uint8_t j = 0; j < cardsPerSuit; ++j)
             {
                 m_cards[baseIdx + j]._suit = static_cast<Suit>(i);
-                m_cards[baseIdx + j]._val  = static_cast<uint32_t>(j + 1);
+                m_cards[baseIdx + j]._val  = (j + 1);
             }
         }
     }
@@ -228,13 +233,17 @@ bool testPrintFirst()
 int main()
 {
 #ifdef _WIN32
-    // Set console code page to CodePage UTF8 so console known how to interpret string data
+    // Set console code page to CodePage UTF8 so the console knows how to interpret string data
     SetConsoleOutputCP(CP_UTF8);
+#   if _MSC_VER < 1930  // Visual Sudio 2022 compiler version starts from 19.30 (1930)
     // Enable buffering to prevent VS from chopping up UTF8 byte sequences
-    //setvbuf(stdout, nullptr, _IOFBF, 1024); // [no need for this with VS 2022 and later]
-
-    //std::string test = "Greek: αβγδ; German: Übergrößenträger;";// R"( ¯\_(ツ)_/¯)";
-    //std::cout << test << std::endl;
+    setvbuf(stdout, nullptr, _IOFBF, 1024); // no need for this with VS 2022 and later
+#   endif
+#   ifndef NDEBUG
+    std::string test1 = "Greek: αβγδ; German: Übergrößenträger;";
+    std::string test2 = R"( ¯\_(ツ)_/¯)";
+    std::cout << "Unicode UTF-8 tests.\n" << test1 << std::endl << test2 << std::endl << std::endl;
+#   endif
 #endif
 
     //assert(testPrintFirst());
