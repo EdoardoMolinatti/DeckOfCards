@@ -1,0 +1,19 @@
+os: windows
+language: cpp
+
+matrix:
+  include:
+    - os: windows
+      dist: 'latest'
+
+before_install:
+- echo "Installing Visual Studio..."
+- choco install visualstudio2022community
+
+script:
+- echo "Compiling DeckOfCards.cpp"
+- cl DeckOfCards.cpp -o DeckOfCards.exe
+
+after_success:
+- echo "Running DeckOfCards.exe"
+- DeckOfCards.exe
