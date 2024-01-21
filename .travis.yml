@@ -14,7 +14,7 @@ script:
 - echo "Current directory:"
 - cd
 - echo "Executing 'vcvarsall.bat' to setup VS 2022 compiler toolchain (64bit architecture)"
-- "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvarsall.bat" x86_x64
+- "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsx86_amd64.bat"
 - echo "Compiling 'DeckOfCards.cpp'..."
 - cl DeckOfCards.cpp -o DeckOfCards.exe
 
