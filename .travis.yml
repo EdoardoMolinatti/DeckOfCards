@@ -1,10 +1,10 @@
 os: linux
-sudo: required
+dist: ubuntu
 language: cpp
 
 script:
 - echo "Compiling 'DeckOfCards.cpp'..."
-- gcc DeckOfCards.cpp -o DeckOfCards
+- gcc -std=c++11 DeckOfCards.cpp -o DeckOfCards
 
 after_success:
 - echo "Running DeckOfCards.exe"
