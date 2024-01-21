@@ -3,8 +3,9 @@ dist: focal
 language: cpp
 
 script:
+- rm DeckOfCards  # Remove the previously compiled executable (if present)
 - echo "Compiling 'DeckOfCards.cpp'..."
-  g++ -std=c++11 DeckOfCards.cpp -o DeckOfCards
+- g++ -std=c++11 DeckOfCards.cpp -o DeckOfCards
 
 after_success:
 - echo "Running DeckOfCards.exe"
