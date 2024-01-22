@@ -3,7 +3,6 @@ dist: focal
 language: cpp
 
 script:
-- echo "Compiling 'DeckOfCards.cpp'..."
 - g++ -std=c++11 DeckOfCards.cpp -o DeckOfCards
 
 after_success:
