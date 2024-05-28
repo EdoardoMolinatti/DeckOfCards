@@ -77,61 +77,91 @@ struct Card {
         switch (_suit)
         {
         case Suit::Hearts:
-            cout << "♥" << endl;    // Hearts
+            cout << "♥";    // Hearts
             break;
         case Suit::Spades:
-            cout << "♠" << endl;    // Spades
+            cout << "♠";    // Spades
             break;
         case Suit::Diamonds:
-            cout << "♦" << endl;    // Diamonds
+            cout << "♦";    // Diamonds
             break;
         case Suit::Clubs:
-            cout << "♣" << endl;    // Clubs
+            cout << "♣";    // Clubs
             break;
         // https://en.wikipedia.org/wiki/Playing_cards_in_Unicode
         //case Suit::WhiteHearts:
-        //    cout << "♡" << endl;    // WhiteHearts
+        //    cout << "♡";    // WhiteHearts
         //    break;
         //case Suit::WhiteSpades:
-        //    cout << "♤" << endl;    // WhiteSpades
+        //    cout << "♤";    // WhiteSpades
         //    break;
         //case Suit::WhiteDiamonds:
-        //    cout << "♢" << endl;    // WhiteDiamonds
+        //    cout << "♢";    // WhiteDiamonds
         //    break;
         //case Suit::WhiteClubs:
-        //    cout << "♧" << endl;    // WhiteClubs
+        //    cout << "♧";    // WhiteClubs
         //    break;
         default:
-            cout << "?" << endl;
+            cout << "?";
         }
+        cout << endl;
     }
 };
 
 class Deck : public IDeck {
 public:
-    // Method added to print all the cards in the Deck (in straight order)
+    // Method added to print all the cards in the Deck.
     void printAll()
     {
-        const int16_t totCards = static_cast<int16_t>(m_cards.size());
-        const int16_t numWidth = (totCards < 100) ? 2 : 3;
-        for (int16_t idx = 0; idx < totCards; ++idx)
-        {
-            cout << "Index " << setw(numWidth) << idx << ": " << flush;
-            m_cards[idx].print();
-        }
-        cout << endl;
+        const uint8_t totCards = static_cast<uint8_t>(m_cards.size());
+        printFirst(totCards);
     }
 
+    // Prints the first 'num' cards in the Deck.
+    // They're in reverse order because a cards deck is supposed to be face down,
+    // hence the cards extraction should starts from the deck's end.
     void printFirst(uint8_t num)
     {
-        cout << "Printing the first " << static_cast<int>(num) << " cards in the deck:" << endl << flush;
-        // Internally the std::array index is zero-based, hence (num - 1)
-        for (int16_t idx = (num - 1); idx >= 0; --idx)
+        if (num < 1)
         {
-            cout << "Index " << setw(2) << static_cast<int>(idx) << ": " << flush;
-            m_cards[idx].print();
+            cout << "Nothing to print" << endl << flush;
+            return;
         }
-        cout << endl;
+
+        const uint8_t deckSize = static_cast<uint8_t>(m_cards.size());
+        if (1 == num)
+        {
+            cout << "Printing the first card in the deck:" << endl << flush;
+        }
+        else if (num > deckSize)
+        {
+            cout << "Cannot print the first " << static_cast<unsigned>(num) << " cards"
+                " (the deck has only " << static_cast<unsigned>(deckSize) << " cards)." << endl;
+            cout << "Printing all the cards in the deck (" << static_cast<unsigned>(deckSize) << "):" << endl << flush;
+            num = deckSize;
+        }
+        else if (num == deckSize)
+        {
+            cout << "Printing all the cards in the deck (" << static_cast<unsigned>(num) << "):" << endl << flush;
+        }
+        else
+        {
+            cout << "Printing the first " << static_cast<unsigned>(num) << " cards in the deck:" << endl << flush;
+        }
+
+        const uint8_t numWidth = (num < 100) ? 2 : 3;
+        // Starting from the back of the deck of cards (top), that's why we use reverse order
+        // N.B.: the std::array index is zero-based, hence (deckSize - 1)
+        for (int16_t idx = (deckSize - 1); idx >= (deckSize - num); --idx)
+        {
+            //cout << "Index " << setw(numWidth) << static_cast<int>(idx + 1) << ": " << flush;
+            cout << "Card " << setw(numWidth) << static_cast<int>(idx + 1) << ": ";
+
+            #pragma warning( disable : 28020 ) // Disable warning message C28020 ("The expression '...' is not true at this call")
+            m_cards[idx].print();
+            #pragma warning( default : 28020 ) // Re-enable it [https://learn.microsoft.com/en-us/cpp/code-quality/c28020]
+        }
+        cout << endl << flush;
     }
 
     void shuffle()
@@ -154,11 +184,12 @@ public:
                 swap(m_cards[firstIdx], m_cards[secondIdx]);
                 ++totSwaps;
                 cout << ".";
+                //cout << "[" << firstIdx << "↔" << secondIdx << "] ";
             }
             else
             {
-                //cout << "[" << firstIdx << "]";
                 cout << "[" << firstIdx << "==" << secondIdx << "]";
+                //cout << "[" << firstIdx << "]";
             }
         }
         cout << endl << "(" << totSwaps << " card swaps)" << endl << endl;
@@ -217,13 +248,12 @@ bool testShuffle()
     return testPassed;
 }
 
-
 bool testPrintFirst()
 {
     bool testPassed = true;
 
     Deck deck;
-    deck.printFirst(deck.size());
+    deck.printFirst(deck.size() / 2);
 
     return testPassed;
 }
@@ -242,7 +272,9 @@ int main()
 #   ifndef NDEBUG
     std::string test1 = "Greek: αβγδ; German: Übergrößenträger;";
     std::string test2 = R"( ¯\_(ツ)_/¯)";
-    std::cout << "Unicode UTF-8 tests.\n" << test1 << std::endl << test2 << std::endl << std::endl;
+    std::cout << "--------------------------------------------------" << std::endl;
+    std::cout << "Unicode UTF-8 tests.\n" << test1 << std::endl << test2 << std::endl;
+    std::cout << "--------------------------------------------------" << std::endl << std::endl;
 #   endif
 #endif
 
@@ -250,7 +282,9 @@ int main()
     //assert(testShuffle());
 
     Deck deck;
-    deck.printAll(); //deck.printFirst(deck.size());
+    deck.printFirst(13);
+    deck.printFirst(95);
+    //deck.printAll(); //deck.printFirst(deck.size());
     deck.shuffle();
     //deck.shuffle(512);
     deck.printAll(); //deck.printFirst(deck.size());
